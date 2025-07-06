@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyMessage } from "ethers";
-import { userService } from "@/lib/supabase/services/userService";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -16,9 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await userService.findOrCreate(address);
-
-    return NextResponse.json({ user });
+    return NextResponse.json({});
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Auth failed" }, { status: 500 });

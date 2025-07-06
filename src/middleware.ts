@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { supabase } from "@/lib/supabase/provider/supabaseClient";
+import { createSupabaseServer } from "@/lib/supabase/provider/supabase-server";
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
@@ -12,27 +12,22 @@ const mappedProtectedRoutes = () => PROTECTED_ROUTES.map((route) => `${route}`);
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
+  const supabase = await createSupabaseServer();
+  const { data } = await supabase.auth.getUser();
 
-  if (pathname.includes("/api/auth/verify")) {
-    return NextResponse.next();
+  if (pathname === "/sign-in" && data.user) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
-  console.log("MIDDLEWARE RUNNING FOR:", pathname);
-
-  // Loại trừ trang sign-in
-  if (pathname === "/sign-in") {
+  if (pathname === "/sign-in" && !req.cookies.get("session")) {
     return NextResponse.next();
   }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
 
   const isProtectedRoute = mappedProtectedRoutes().some(
     (route) => pathname === route || pathname.startsWith(route)
   );
 
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !data.user) {
     const redirectUrl = new URL("/sign-in", req.url);
     redirectUrl.searchParams.set("redirectedFrom", pathname);
     return NextResponse.redirect(redirectUrl);

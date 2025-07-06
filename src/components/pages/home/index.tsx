@@ -6,7 +6,6 @@ import axios from "axios";
 import * as Select from "@radix-ui/react-select";
 import * as Tabs from "@radix-ui/react-tabs";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import * as Avatar from "@radix-ui/react-avatar";
 import {
   Wallet,
   History,
@@ -19,7 +18,7 @@ import {
   ChevronDown,
   Loader2,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase/provider/supabaseClient";
+import { supabaseBrowser } from "@/lib/supabase/provider/supabase-client";
 import { useRouter } from "next/navigation";
 
 interface Network {
@@ -262,8 +261,7 @@ export default function App() {
   const disconnect = () => {
     setWalletData(null);
     setIsConnected(false);
-    localStorage.removeItem("walletSession");
-    supabase.auth.signOut();
+    supabaseBrowser.auth.signOut();
     router.push("/sign-in");
   };
 
@@ -552,10 +550,8 @@ export default function App() {
                           key={tx.hash}
                           className="bg-gray-50 border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200"
                           style={{
-                            "&:hover": {
-                              backgroundColor: `${walletData?.currentNetwork.color}08`,
-                              borderColor: `${walletData?.currentNetwork.color}30`,
-                            },
+                            backgroundColor: `${walletData?.currentNetwork.color}08`,
+                            borderColor: `${walletData?.currentNetwork.color}30`,
                           }}
                         >
                           <div className="flex justify-between items-center mb-3">

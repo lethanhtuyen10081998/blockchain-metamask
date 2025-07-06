@@ -3,10 +3,11 @@
 import PasswordField from "@/components/material/form/password";
 import TextField from "@/components/material/form/textfield";
 import { Button } from "@/components/ui/button";
-import { userService } from "@/lib/supabase/services/userService";
+import { useAuthStore } from "@/lib/supabase/services/user-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 
 export type SignInForm = {
   email: string;
@@ -14,7 +15,8 @@ export type SignInForm = {
 };
 
 export default function SignInPage() {
-  const forms = useForm<SignInForm>({
+  const router = useRouter();
+  const forms = useForm({
     resolver: zodResolver(
       z.object({
         email: z.string().email(),
@@ -22,20 +24,21 @@ export default function SignInPage() {
       })
     ),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "lethanhtuyen10081998@gmail.com",
+      password: "Tuyen@123",
     },
   });
 
+  const { signIn } = useAuthStore();
+
   const onSubmit = async (data: SignInForm) => {
-    console.log(data);
+    const { error } = await signIn(data.email, data.password);
 
-    const { user, session } = await userService.signIn(
-      data.email,
-      data.password
-    );
-
-    console.log(user, session);
+    if (error) {
+      console.error(error);
+    } else {
+      router.push("/");
+    }
   };
 
   return (
