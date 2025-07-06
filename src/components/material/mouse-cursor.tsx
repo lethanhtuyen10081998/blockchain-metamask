@@ -17,7 +17,7 @@ export function MouseCursor() {
 
   return (
     <motion.div
-      className="fixed w-6 h-6 bg-blue-400/20 rounded-full pointer-events-none z-50 mix-blend-screen hidden md:block"
+      // className="fixed w-6 h-6 bg-blue-400/20 rounded-full pointer-events-none z-50 mix-blend-screen hidden md:block"
       style={{
         left: mousePosition.x - 12,
         top: mousePosition.y - 12,
